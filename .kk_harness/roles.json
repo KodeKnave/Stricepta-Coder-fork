@@ -1,0 +1,78 @@
+{
+  "default": {
+    "model": "qwen3.8-9b-heretic-uncensored",
+    "backend": {
+      "kind": "lmstudio",
+      "base_url": "http://localhost:1234/v1"
+    },
+    "parameters": {
+      "flash_attention": true,
+      "k_cache_type": "q8_0",
+      "v_cache_type": "q4_0",
+      "parallel": 1,
+      "context_length": 65536,
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "repeat_penalty": 1.0,
+      "max_tokens": 16384
+    }
+  },
+  "roles": {
+    "coder": {
+      "model": "qwen3.8-9b-heretic-uncensored",
+      "description": "Applies one specified code change in the files the task names and runs the checks the task names; reports what changed and the check result",
+      "task": ".roles/tasks/coder.md",
+      "parameters": {},
+      "system_prompt": ".claude/roles/coder.md"
+    },
+    "reader": {
+      "model": "whiskyakm/minicpm5-2b-nvfp4-gguf/minicpm5-2b-nvfp4.gguf",
+      "description": "Reads the files or logs the task names and returns a short summary with file paths and quoted evidence lines; changes nothing",
+      "task": ".roles/tasks/reader.md",
+      "parameters": {
+        "context_length": 32768,
+        "ttl": 900,
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 0,
+        "min_p": 0.0,
+        "repeat_penalty": 1.15,
+        "max_tokens": 2048
+      },
+      "system_prompt": ".claude/roles/reader.md"
+    },
+    "reviewer": {
+      "model": "deepseek-v4-pro-qwen3.5-9b-uncensored-heretic-gptq",
+      "description": "Checks a result against the brief and the tests of the repo and lists defects, each with the line that shows it; changes nothing",
+      "task": ".roles/tasks/reviewer.md",
+      "parameters": {
+        "context_length": 16384,
+        "ttl": 300,
+        "speculative_draft_mtp": true,
+        "speculative_draft_max_tokens": 3,
+        "speculative_draft_min_tokens": 0,
+        "speculative_draft_min_continue_probability": 0.3,
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "min_p": 0.0,
+        "repeat_penalty": 1.0,
+        "max_tokens": 8192
+      },
+      "system_prompt": ".claude/roles/reviewer.md"
+    }
+  },
+  "groups": [
+    [
+      "default",
+      "coder",
+      "reader"
+    ],
+    [
+      "reviewer"
+    ]
+  ],
+  "fallback_role": "coder"
+}
