@@ -12,6 +12,7 @@ auth.json
 reports/
 GEMINI.md
 CLAUDE.md
+!/CLAUDE.md
 package-lock.json
 /.claude
 # Local git worktrees created by agent/developer tooling.
