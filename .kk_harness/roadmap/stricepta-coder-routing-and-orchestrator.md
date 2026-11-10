@@ -6,6 +6,6 @@ The user (2026-11-10): Claude Code does not swap models by itself and only moves
 
 Candidate named by the user, a hypothesis to test: MiniCPM5 2B, because it admits when it does not know what to do and so delegates most work anyway. Its card says it is not abliterated and is meant for tool plumbing on code and tool output (`knowledge/models/minicpm5-2b-nvfp4.md` and `role-assignments.md` in the harness library, `AI/claude`). The measured orchestrator comparison of the library (Gemma 4 12B against Qwen3.8 9B) is still open there; add MiniCPM5 to it.
 
-Open: who decides a route (a rule, a hook, the orchestrator's judgment: `harness-task-routing` item 5 in the library roadmap), what the orchestrator sees of the other models' work, and how this works while the Anthropic usage limit is reached (`stricepta-coder-model-switching`).
+Open: who decides a route (a rule, a hook, the orchestrator's judgment: `harness-task-routing` item 5 in the library roadmap), what the orchestrator sees of the other models' work, and how this works while the Anthropic usage limit is reached (`stricepta-coder-model-mixing`).
 
 Ranked after the plugin items. Not built, nothing decided. Delete this item when it is built or dropped.

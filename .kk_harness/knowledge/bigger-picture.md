@@ -6,7 +6,7 @@ Stricepta-Coder is the user's fork of OpenClaude (same commit as `AI/openclaude`
 
 ## What the host is to do
 
-1. **Both model families at once**: Anthropic models until the usage limit, then local models, then back once the limit is restored, repeating (`stricepta-coder-model-switching`).
+1. **Both model families together**: used simultaneously in one session with a configurable split of tasks; an Anthropic model whose usage limit is used up is out of order until it is restored (`stricepta-coder-model-mixing`).
 2. **Routing and orchestrator**: route a task in its own window to Anthropic or to a local model; a local model, possibly MiniCPM5 2B, may orchestrate (`stricepta-coder-routing-and-orchestrator`).
 2b. **Roles native**, in the style of Zoo Code modes, on one role map for Anthropic and local models (`stricepta-coder-roles-native`).
 3. **Tools built in**: CBM, context-mode, Ponytail, caveman, Headroom and further plugins as CLIs or code in the source, not MCP servers (`stricepta-coder-tool-integration`).

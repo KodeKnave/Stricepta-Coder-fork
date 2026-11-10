@@ -11,6 +11,8 @@ What git and the ledger know (branch, uncommitted paths, newest entries) is gene
 - Zoo Code is an inspiration for the roles of Stricepta-Coder, not a component that runs alongside it; Claude Code is the bigger inspiration (the user, 2026-11-10). → `ledger/2026-11-10-roles-native-item-and-zoo-code-modes.md`
 - `CLAUDE.md` of this repo is tracked through `!/CLAUDE.md` in `.gitignore`; keep the line when merging upstream (the user, 2026-11-10). → `ledger/2026-11-10-claude-md-tracked-despite-forks-gitignore.md`
 
+- Stricepta-Coder uses Anthropic and local models simultaneously in one session, the split of tasks configurable; an Anthropic model whose usage limit is used up is out of order until it is restored (the user, 2026-11-10). → `ledger/2026-11-10-model-mixing-is-simultaneous-and-switching.md`
+
 ## Next
 
-Nothing is built. The goal and the six work areas: [`knowledge/bigger-picture.md`](knowledge/bigger-picture.md); what the harness learned: [`knowledge/harness-wisdom.md`](knowledge/harness-wisdom.md). Open items: [`roadmap/`](roadmap/), starting once the plugin items are done.
+Nothing is built. The goal and the six work areas: [`knowledge/bigger-picture.md`](knowledge/bigger-picture.md); what the harness learned: [`knowledge/harness-wisdom.md`](knowledge/harness-wisdom.md). All goals and features in one table: [`roadmap/README.md`](roadmap/README.md); open items: [`roadmap/`](roadmap/), starting once the plugin items are done.

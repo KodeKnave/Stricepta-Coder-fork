@@ -7,8 +7,10 @@ below the marker line are overwritten the next time this hook runs. See the
 session-ledger rule for what belongs in an entry and how to add one.
 
 <!-- ledger-index:generated — do not hand-edit below this line, edit files in ledger/ instead -->
-- 2026-11 — 3 entries — [month index](ledger-index/2026-11.md)
+- 2026-11 — 5 entries — [month index](ledger-index/2026-11.md)
 Newest entries:
 - 2026-11-10 — CLAUDE.md is tracked; the fork's .gitignore had ignored it — [full entry](ledger/2026-11-10-claude-md-tracked-despite-forks-gitignore.md)
+- 2026-11-10 — Anthropic and local models are used simultaneously as well as switched — [full entry](ledger/2026-11-10-model-mixing-is-simultaneous-and-switching.md)
+- 2026-11-10 — Overview table of all Stricepta-Coder goals and features in the roadmap folder — [full entry](ledger/2026-11-10-roadmap-overview-table.md)
 - 2026-11-10 — Item for native roles in the style of Zoo Code modes — [full entry](ledger/2026-11-10-roles-native-item-and-zoo-code-modes.md)
 - 2026-11-10 — The host scope, the bigger picture and the work items now live in the Stricepta-Coder repository — [full entry](ledger/2026-11-10-scope-bigger-picture-and-items-moved-here.md)

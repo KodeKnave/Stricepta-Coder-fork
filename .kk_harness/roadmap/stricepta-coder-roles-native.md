@@ -10,7 +10,7 @@ What the harness has: `roles.json` of a dev root (here `.kk_harness/roles.json`,
 
 Ideas, none decided:
 
-- One role definition format for the host that reads both: Zoo Code's fields (`slug`, `roleDefinition`, `whenToUse`, `groups` with file restrictions) plus the harness's model, parameters (thinking, sampling, context) and a local twin for each Anthropic tier, so the usage-limit switch (`stricepta-coder-model-switching`) swaps the model and keeps the role.
+- One role definition format for the host that reads both: Zoo Code's fields (`slug`, `roleDefinition`, `whenToUse`, `groups` with file restrictions) plus the harness's model, parameters (thinking, sampling, context) and a local twin for each Anthropic tier, so the usage-limit switch (`stricepta-coder-model-mixing`) swaps the model and keeps the role.
 - Whether to read `.roomodes` and `custom_modes.yaml` as an import format is open; the host defines its own format first.
 - A mode dropdown in the GUI with the active role, model and endpoint always visible; the orchestrator role as the default entry (`stricepta-coder-routing-and-orchestrator`).
 - Rules, hooks and permission sets per role (the reader role gets no write tools); the refusal figures of the model cards decide which model may take story, canon and asset roles.
