@@ -6,6 +6,11 @@ What git and the ledger know (branch, uncommitted paths, newest entries) is gene
 
 ## Decisions
 
+- Stricepta-Coder is built after the plugin `harness@kode-knave` is finished; the plugin is the reference base (the user, 2026-11-10). → `ledger/2026-11-10-scope-bigger-picture-and-items-moved-here.md`
+- Claude Code does not swap models by itself and switches only between Anthropic models; Stricepta-Coder may route to Anthropic or local models and run a local orchestrator (MiniCPM5 2B is a candidate to test) (the user, 2026-11-10). → same entry
+
+- Zoo Code is an inspiration for the roles of Stricepta-Coder, not a component that runs alongside it; Claude Code is the bigger inspiration (the user, 2026-11-10). → `ledger/2026-11-10-roles-native-item-and-zoo-code-modes.md`
+
 ## Next
 
-Open items: [`roadmap/`](roadmap/).
+Nothing is built. The goal and the six work areas: [`knowledge/bigger-picture.md`](knowledge/bigger-picture.md); what the harness learned: [`knowledge/harness-wisdom.md`](knowledge/harness-wisdom.md). Open items: [`roadmap/`](roadmap/), starting once the plugin items are done.

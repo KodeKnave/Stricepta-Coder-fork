@@ -1,0 +1,11 @@
+What the harness library learned about hosts, local models and guards that decides how Stricepta-Coder is built; read it before designing a host feature. Sources are ledger entries and files in `AI/claude`.
+
+# Wisdom from the harness for the host
+
+- **Claude Code** switches only between Anthropic models and does not swap models by itself, so it reaches a local model only through subagents or a session started on a local endpoint. Stricepta-Coder is not bound by this (the user, 2026-11-10).
+- **OpenClaude isolates Claude Code's project files** (`.claude/settings*.json`, `CLAUDE.md`, skills, commands, agents, output styles, workflows) by design (issue 1875). The harness mirrors settings keys and links folders to make up for it: ledger `2026-11-07-second-pass-no-claude-fallback-and-host-survey`, roadmap `harness-openclaude-no-claude-fallback`.
+- **A small local model (9B) cannot run the `Stop` block that makes it call `AskUserQuestion`**; a hook that asks the user itself, and a `PreStop` event, are host features (ledger `2026-11-06-openclaude-write-ask-live-run-and-nudge-findings`, item `stricepta-coder-host-features`).
+- **One approval of "edit its own settings for this session" silences every write through the `.openclaude/` links**, the direct `.claude/` path still asks (live result 2026-11-06, `harness-openclaude-write-ask`).
+- **Refusals decide model fit**: roles on story, canon, asset or drawing content use only models with a published refusal figure of 6/100 or lower; MiniCPM5 2B and Qwen3.8 9B heretic are for code and tool output (`knowledge/models/role-assignments.md` in the library).
+- **Local models need per-model settings** (thinking switch, sampling, cache types, context): the library keeps one card per model in `knowledge/models/` and a `roles.json` per dev root; a role cannot yet switch thinking or sampling (`harness-per-role-thinking-control`).
+- **Guards read code, not only commands**: the command guards read Bash and Python and refuse what they cannot read; the library's `knowledge/harness/` explains how (`rules-and-hooks.md`, the guard notes).
