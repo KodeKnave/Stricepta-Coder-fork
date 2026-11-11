@@ -23,5 +23,6 @@ One file per item in this folder; this table lists every goal and every feature 
 | 6 | **The harness native**: every feature, workflow, hook and rule of the plugin | [native-harness](stricepta-coder-native-harness.md) | not checked | `harness-composable-hook-parts` |
 | 7 | **VS Code extension** in a repository of its own (proposed, not decided) | [vscode-extension-repo](stricepta-coder-vscode-extension-repo.md) | `vscode-extension/` | |
 | 8 | **GUI improvements** (terminal UI, `web/`, extension; wish list still empty) | [gui](stricepta-coder-gui.md) | not checked | |
+| 9 | **Image generation connection** to SwarmUI or ComfyUI, opt in, built in or CLI, MCP last | [image-generation](stricepta-coder-image-generation.md) | not checked | `harness-image-generation-connection` |
 
 Goal 1 is the first part of goal 6; goal 2 builds on the plugin's manual fallback; goals 3 and 4 share one role map.

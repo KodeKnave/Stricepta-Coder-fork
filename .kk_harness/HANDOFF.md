@@ -15,4 +15,4 @@ What git and the ledger know (branch, uncommitted paths, newest entries) is gene
 
 ## Next
 
-Nothing is built. The goal and the six work areas: [`knowledge/bigger-picture.md`](knowledge/bigger-picture.md); what the harness learned: [`knowledge/harness-wisdom.md`](knowledge/harness-wisdom.md). All goals and features in one table: [`roadmap/README.md`](roadmap/README.md); open items: [`roadmap/`](roadmap/), starting once the plugin items are done.
+Nothing is built. The goal and the six work areas: [`knowledge/bigger-picture.md`](knowledge/bigger-picture.md); what the harness learned: [`knowledge/harness-wisdom.md`](knowledge/harness-wisdom.md). All goals and features in one table: [`roadmap/README.md`](roadmap/README.md); open items: [`roadmap/`](roadmap/), starting once the plugin items are done. Nine goals are listed (goal 9, the opt-in SwarmUI or ComfyUI image generation connection, was added 2026-11-11 with the library item `harness-image-generation-connection` in `AI/claude/roadmap/`). The plugin repo `AI/claude` comes first; its handoff names the order.
