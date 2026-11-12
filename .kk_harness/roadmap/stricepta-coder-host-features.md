@@ -37,3 +37,5 @@ Open: the order inside this scope, which tool is a CLI and which part of the sou
 Not built, nothing decided. Delete this item when it has moved into the Stricepta-Coder roadmap, or the list is built or dropped.
 
 Added 2026-11-12: cut a repetition loop inside one generation (a repeated n-gram in the streamed thinking or reply) and treat it as a failed call; the plugin cannot do this, hooks run between tool calls. Reason and the library side: `AI/claude/roadmap/harness-task-routing.md` ("Loops inside a stage").
+
+Checked 2026-11-12 in a Claude Code source snapshot (2026-03-31, `src/utils/hooks.ts` `createBaseHookInput`): the base hook payload holds `session_id`, `transcript_path`, `cwd`, `permission_mode`, `agent_id` and `agent_type`, no context window: item 1f stands for Claude Code (the snapshot may differ from the installed version). The settings schema keeps unknown top-level keys (`.passthrough()` in `src/utils/settings/types.ts`).
