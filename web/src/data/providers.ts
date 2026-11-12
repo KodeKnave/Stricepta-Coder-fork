@@ -116,11 +116,11 @@ export const providers: Provider[] = [
   // ── gateways ─────────────────────────────────────────────────────────
   {
     id: 'opengateway',
-    name: 'Twigpine Opengateway',
+    name: 'Twigpine OpenGateway',
     group: 'gateways',
     setup: 'startup default, /provider, or env vars',
     envVars: ['OPENGATEWAY_API_KEY'],
-    notes: 'Smart gateway at https://api.twigpine.com/v1 with auto smart-routing, MiMo, MiniMax, Qwen, GLM, Gemini — plus free models (Nemotron 3 Ultra, Ling 3.0 Flash, Tencent HY3). Keys at gitlawb.com/opengateway/keys.',
+    notes: 'Smart gateway at https://api.twigpine.com/v1 with auto smart-routing, MiMo, MiniMax, Qwen, GLM, Gemini. Current models and pricing: api.twigpine.com/v1/models. Keys at twigpine.com/console/gateway/keys.',
     badge: 'recommended',
   },
   {
@@ -139,6 +139,14 @@ export const providers: Provider[] = [
     setup: '/provider or env vars',
     envVars: ['OPENROUTER_API_KEY'],
     notes: 'OpenAI-compatible aggregation across hundreds of hosted models.',
+  },
+  {
+    id: 'requesty',
+    name: 'Requesty',
+    group: 'gateways',
+    setup: '/provider or OpenAI-compatible env vars',
+    envVars: ['REQUESTY_API_KEY', 'OPENAI_API_KEY'],
+    notes: 'OpenAI-compatible gateway at https://router.requesty.ai/v1 (regional: https://router.eu.requesty.ai/v1, https://router.us.requesty.ai/v1, https://router.ap.requesty.ai/v1); /provider and --provider requesty default to openai/gpt-5-mini, while raw env setup must set CLAUDE_CODE_USE_OPENAI=1, OPENAI_BASE_URL, and OPENAI_MODEL. REQUESTY_API_KEY is sent only to these Requesty URLs; any other OPENAI_BASE_URL uses OPENAI_API_KEY. Uses public discovery of chat models.',
   },
   {
     id: 'llmtr',

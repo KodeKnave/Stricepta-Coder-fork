@@ -59,6 +59,7 @@ const EXPECTED_PRESETS = [
   'longcat',
   'llmtr',
   'commandcode',
+  'requesty',
   'opencode',
   'opencode-go',
   'clinepass',
@@ -107,6 +108,18 @@ describe('compatibility mappings', () => {
       gatewayId: 'atlas-cloud',
       routeId: 'atlas-cloud',
     })
+  })
+
+  test('Twigpine OpenGateway keeps the gitlawb-opengateway preset and route ids for saved profiles', () => {
+    const route = {
+      vendorId: 'openai',
+      gatewayId: 'gitlawb-opengateway',
+      routeId: 'gitlawb-opengateway',
+    }
+    expect(getGateway('gitlawb-opengateway')?.label).toBe('Twigpine OpenGateway')
+    expect(routeForPreset('gitlawb-opengateway')).toEqual(route)
+    expect(resolveProfileRoute('gitlawb-opengateway')).toEqual(route)
+    expect(ORDERED_PROVIDER_PRESETS[0]).toBe('gitlawb-opengateway')
   })
 
   test('Custom Anthropic is modeled as an Anthropic proxy', () => {

@@ -710,7 +710,7 @@ describe('discoverModelsForRoute', () => {
     expect(result?.models.some(m => m.apiName === 'custom-og/mimo-v3')).toBe(true)
   })
 
-  test('opengateway hybrid discovery filters expired static models and live duplicates after availableUntil cutoff', async () => {
+  test('opengateway hybrid discovery shows active live models and drops retired ones', async () => {
     const { discoverModelsForRoute } = await loadDiscoveryServiceModule()
 
     setMockFetch(mock((input, init) => {
@@ -718,7 +718,24 @@ describe('discoverModelsForRoute', () => {
         new Response(
           JSON.stringify({
             data: [
-              { id: 'inclusionai/ling-3.0-tiny:free', name: 'Ling 3.0 Tiny Live' },
+              { id: 'auto', name: 'Auto (smart routing)', status: 'active' },
+              {
+                id: 'xiaomi/mimo-v2.6-pro',
+                name: 'MiMo V2.6-Pro',
+                status: 'active',
+              },
+              {
+                id: 'xiaomi/mimo-v2.5-pro',
+                name: 'MiMo V2.5-Pro',
+                status: 'retired',
+                successor: 'xiaomi/mimo-v2.6-pro',
+              },
+              {
+                id: 'nvidia/nemotron-3-ultra-550b-a55b',
+                name: 'Nemotron 3 Ultra',
+                status: 'retired',
+              },
+              { id: 'z-ai/glm-5.2', name: 'GLM 5.2' },
               { id: 'moonshotai/kimi-k3', name: 'Kimi K3' },
             ],
           }),
@@ -732,12 +749,132 @@ describe('discoverModelsForRoute', () => {
     })
 
     expect(result?.source).toBe('network')
+    expect(result?.discoveredModelCount).toBe(4)
     const apiNames = result?.models.map(
       (model: { apiName: string }) => model.apiName,
     )
-    expect(apiNames).toContain('mimo-v2.5-pro')
-    expect(apiNames).toContain('moonshotai/kimi-k3')
-    expect(apiNames).not.toContain('inclusionai/ling-3.0-tiny:free')
+    // Offline floor first (live duplicates dedupe onto it), then every other
+    // active live route; retired rows never reach the picker.
+    expect(apiNames).toEqual([
+      'auto',
+      'mimo-v2.6-pro',
+      'mimo-v2.6-flash',
+      'z-ai/glm-5.2',
+      'moonshotai/kimi-k3',
+    ])
+  })
+
+  test('opengateway keeps the offline floor and the last cached live list when a refresh fails', async () => {
+    const { discoverModelsForRoute } = await loadDiscoveryServiceModule()
+    const unavailable = mock(() =>
+      Promise.resolve(new Response('unavailable', { status: 503 })),
+    ) as unknown as typeof globalThis.fetch
+    const apiNamesOf = (result: { models: Array<{ apiName: string }> } | null) =>
+      result?.models.map(model => model.apiName)
+
+    // Never fetched: a failed refresh still leaves the offline floor.
+    setMockFetch(unavailable)
+    const neverFetched = await discoverModelsForRoute('gitlawb-opengateway', {
+      forceRefresh: true,
+    })
+    expect(neverFetched?.error).not.toBeNull()
+    expect(apiNamesOf(neverFetched)).toEqual([
+      'auto',
+      'mimo-v2.6-pro',
+      'mimo-v2.6-flash',
+    ])
+
+    // A successful refresh caches the live list.
+    setMockFetch(mock(() =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            data: [
+              { id: 'xiaomi/mimo-v2.6-pro', status: 'active' },
+              { id: 'moonshotai/kimi-k3', name: 'Kimi K3', status: 'active' },
+            ],
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        ),
+      ),
+    ) as unknown as typeof globalThis.fetch)
+    const fresh = await discoverModelsForRoute('gitlawb-opengateway', {
+      forceRefresh: true,
+    })
+    expect(fresh?.source).toBe('network')
+
+    // The next (startup-style, cache-preserving) refresh fails, so the last
+    // cached list is kept on top of the floor: a model retired since then
+    // stays listed until a refresh succeeds.
+    setMockFetch(unavailable)
+    const afterFailure = await discoverModelsForRoute('gitlawb-opengateway', {
+      forceRefresh: true,
+    })
+    expect(afterFailure?.source).toBe('stale-cache')
+    expect(afterFailure?.error).not.toBeNull()
+    expect(apiNamesOf(afterFailure)).toEqual([
+      'auto',
+      'mimo-v2.6-pro',
+      'mimo-v2.6-flash',
+      'moonshotai/kimi-k3',
+    ])
+  })
+
+  test('opengateway startup refresh refetches a cached list once it is an hour old', async () => {
+    const { getDiscoveryCacheKey, refreshStartupDiscoveryForRoute } =
+      await loadDiscoveryServiceModule()
+
+    delete process.env.OPENGATEWAY_API_KEY
+    delete process.env.OPENAI_API_KEY
+    delete process.env.OPENAI_API_KEYS
+    let callCount = 0
+    setMockFetch(mock(() => {
+      callCount++
+      return Promise.resolve(
+        new Response(
+          JSON.stringify({
+            data: [
+              { id: 'qwen/qwen3.8-max', name: 'Qwen 3.8 Max', status: 'active' },
+              { id: 'z-ai/glm-5.3', name: 'GLM 5.3', status: 'active' },
+            ],
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        ),
+      )
+    }) as unknown as typeof globalThis.fetch)
+    const cacheKey = getDiscoveryCacheKey('gitlawb-opengateway')
+    const cachedLineup = [
+      { id: 'z-ai/glm-5.2', apiName: 'z-ai/glm-5.2', label: 'GLM 5.2' },
+    ]
+    const apiNamesOf = (result: { models: Array<{ apiName: string }> } | null) =>
+      result?.models.map(model => model.apiName)
+
+    // A list cached half an hour ago is still fresh: no request.
+    await setCachedModels(cacheKey, {
+      models: cachedLineup,
+      updatedAt: Date.now() - 30 * 60 * 1000,
+    })
+    const recent = await refreshStartupDiscoveryForRoute('gitlawb-opengateway')
+    expect(recent?.source).toBe('cache')
+    expect(callCount).toBe(0)
+    expect(apiNamesOf(recent)).toContain('z-ai/glm-5.2')
+
+    // Two hours old (well inside a day): the next launch fetches the live
+    // list, so a model the gateway added since then shows up.
+    await setCachedModels(cacheKey, {
+      models: cachedLineup,
+      updatedAt: Date.now() - 2 * 60 * 60 * 1000,
+    })
+    const refreshed = await refreshStartupDiscoveryForRoute('gitlawb-opengateway')
+    expect(refreshed?.source).toBe('network')
+    expect(callCount).toBe(1)
+    expect(apiNamesOf(refreshed)).toEqual([
+      'auto',
+      'mimo-v2.6-pro',
+      'mimo-v2.6-flash',
+      'qwen/qwen3.8-max',
+      'z-ai/glm-5.3',
+    ])
   })
 
   test('openai-compatible discovery applies descriptor static headers with auth', async () => {

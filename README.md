@@ -277,6 +277,12 @@ names on Windows.
 Unobservable force termination, host crashes, and power loss remain `stale` on
 every platform.
 
+`openclaude logs <id-or-name> -f` follows the session selected at startup,
+even if its name is later reused. It drains the final log bytes and stops when
+that session reaches `exited`, `failed`, `killed`, or `stale`. Missing or
+unreadable session metadata keeps the follower running; interrupt it to stop.
+The command remains a log viewer and does not return the child's exit code.
+
 `openclaude attach <id-or-name>` currently reports the matching session and
 points to `openclaude logs <id> -f`; full terminal reattach is not implemented
 for local background sessions yet.
@@ -381,6 +387,7 @@ Advanced and source-build guides:
 | OrcaRouter | `/provider`, or `ORCAROUTER_API_KEY` with `--provider orcarouter` | OpenAI-compatible model routing gateway at `https://api.orcarouter.ai/v1`, defaults to `openai/gpt-5.5`, with `orcarouter/auto` smart routing and authenticated model discovery. Existing environment setups must replace `OPENAI_API_KEY` with `ORCAROUTER_API_KEY`, even when a custom authentication header supplies the request credential. Custom headers remain supported. |
 | Runcrate | `/provider` or `RUNCRATE_API_KEY` with `--provider runcrate` | OpenAI-compatible aggregating gateway at `https://api.runcrate.ai/v1`, defaults to `deepseek-ai/DeepSeek-V4.1-Flash`, with curated open models (DeepSeek, GLM, Qwen, GPT-OSS). Existing environment setups must replace `OPENAI_API_KEY` with `RUNCRATE_API_KEY`. Custom headers remain supported. |
 | Hicap | `/provider` or OpenAI-compatible env vars | Uses `api-key` auth, discovers models from unauthenticated `/models`, and supports Responses mode for `gpt-` models |
+| Requesty | `/provider` or OpenAI-compatible env vars | OpenAI-compatible gateway at `https://router.requesty.ai/v1` (regional: `https://router.eu.requesty.ai/v1`, `https://router.us.requesty.ai/v1`, `https://router.ap.requesty.ai/v1`); `/provider` and `--provider requesty` default to `openai/gpt-5-mini`, while raw env setup must set `CLAUDE_CODE_USE_OPENAI=1`, `OPENAI_BASE_URL`, and `OPENAI_MODEL`; accepts `REQUESTY_API_KEY` or `OPENAI_API_KEY` after the route is selected, but sends `REQUESTY_API_KEY` only to these four Requesty URLs (any other `OPENAI_BASE_URL` uses `OPENAI_API_KEY`), and discovers chat models from the public `/models` catalog |
 | Fireworks AI | `/provider` or env vars | First-class provider with 276 curated models (DeepSeek, Qwen, Llama, Gemma, and more); uses `FIREWORKS_API_KEY` |
 | LongCat | `/provider` or env vars | Meituan LongCat OpenAI-compatible API at `https://api.longcat.chat/openai/v1`; uses `LONGCAT_API_KEY` and defaults to `LongCat-2.0` |
 | ClinePass | `/provider` or env vars | AI model gateway with usage limits (5hr, weekly, monthly); uses `CLINE_API_KEY` at `https://api.cline.bot/api/v1` |
@@ -389,7 +396,7 @@ Advanced and source-build guides:
 | GitHub Models | `/onboard-github` | Interactive onboarding with saved credentials |
 | Codex OAuth | `/provider` | Opens ChatGPT sign-in in your browser and stores Codex credentials securely |
 | Codex | `/provider` | Uses existing Codex CLI auth, OpenClaude secure storage, or env credentials |
-| Twigpine Opengateway | Startup default, `/provider`, or env vars | Smart gateway at `https://opengateway.gitlawb.com/v1`; requires an API key from https://gitlawb.com/opengateway/keys and routes Xiaomi MiMo and other partner models by `OPENAI_MODEL` |
+| Twigpine OpenGateway | Startup default, `/provider`, or env vars | Smart gateway at `https://api.twigpine.com/v1`; requires an API key from https://twigpine.com/console/gateway/keys and routes Xiaomi MiMo and other partner models by `OPENAI_MODEL` |
 | OpenCode Zen | `/provider` or env vars | Pay-as-you-go AI gateway; uses `OPENCODE_API_KEY` via `https://opencode.ai/zen/v1`; shared key with OpenCode Go |
 | OpenCode Go | `/provider` or env vars | $10/mo subscription for open models (13 models); uses `OPENCODE_API_KEY` via `https://opencode.ai/zen/go/v1`; shared key with OpenCode Zen |
 | Xiaomi MiMo | `/provider` or env vars | OpenAI-compatible API at `https://mimo.mi.com`; uses `MIMO_API_KEY` and defaults to `mimo-v2.5-pro` |
@@ -442,7 +449,7 @@ OpenClaude supports multiple providers, but behavior is not identical across all
 - Smaller local models can struggle with long multi-step tool flows
 - Some providers impose lower output caps than the CLI defaults, and OpenClaude adapts where possible
 - AI/ML API uses the OpenAI-compatible route, defaults to `gpt-4o`, and only surfaces chat-capable models from its public catalog
-- Twigpine Opengateway is the fresh-install startup default and requires an API key from https://gitlawb.com/opengateway/keys. It uses one OpenAI-compatible base URL; switch between `mimo-*` and `google/gemini-3.1-flash-lite-preview` with `/model`, and do not pin the base URL to `/v1/xiaomi-mimo`.
+- Twigpine OpenGateway is the fresh-install startup default and requires an API key from https://twigpine.com/console/gateway/keys. It uses one OpenAI-compatible base URL (`https://api.twigpine.com/v1`; the older `opengateway.gitlawb.com` address still works) and defaults to `auto`, the gateway's smart routing. `/model` lists the gateway's active models from a cached copy of its live list, on top of a catalog floor of `auto`, `mimo-v2.6-pro`, and `mimo-v2.6-flash`; see [Advanced Setup](docs/advanced-setup.md#twigpine-opengateway) for how the list is cached and refreshed, and what happens when a refresh fails. Do not pin the base URL to `/v1/xiaomi-mimo`.
 - Z.AI GLM Coding Plan uses `https://api.z.ai/api/coding/paas/v4` with `glm-5.2` by default. On that direct route, GLM-5.3-Flash is selectable as `glm-5.3-flash` and accepts image input. Its OpenClaude effort choices are `low`, `high`, and `xhigh`, with `xhigh` requesting Z.AI `max`; GLM-5.3 and the existing GLM-5.2 query controls remain supported. These capabilities are not claimed for gateways that happen to carry the same model name.
 - Xiaomi MiMo uses `api-key` header auth on the direct OpenAI-compatible route and currently does not support `/usage` reporting in OpenClaude
 - GitHub Copilot serializes sub-agent execution by default to reduce Premium Request consumption — see [Agent Routing and Step Limits](docs/agent-routing.md#github-copilot-sub-agent-optimization) for tuning

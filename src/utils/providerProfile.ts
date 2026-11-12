@@ -2753,6 +2753,15 @@ export async function buildLaunchEnv(options: {
   })
 }
 
+/**
+ * Build the startup process env from the legacy single-profile file.
+ * Explicit provider selections (env, flags, or an already-applied plural
+ * provider profile) are returned unchanged, except that a saved
+ * dedicated-provider proxy profile is still applied so its credential
+ * boundary holds. With no saved profile and no OpenAI opt-out, the Twigpine
+ * OpenGateway fresh-install default is applied; otherwise the saved profile's
+ * launch env is built.
+ */
 export async function buildStartupEnvFromProfile(options?: {
   persisted?: ProfileFile | null
   goal?: RecommendationGoal
@@ -2868,16 +2877,32 @@ export async function buildStartupEnvFromProfile(options?: {
       return processEnv
     }
 
-    // No saved profile — default to Twigpine Opengateway.
+    // No saved profile — default to Twigpine OpenGateway. Keep a configured
+    // model only when it is not tied to a different provider's endpoint.
+    // OPENGATEWAY_BASE_URL is the gateway's own endpoint setting and, as with
+    // explicit provider selection, takes precedence over the generic ones.
+    const shellBaseUrl =
+      sanitizeProviderConfigValue(processEnv.OPENAI_BASE_URL) ??
+      sanitizeProviderConfigValue(processEnv.OPENAI_API_BASE)
+    const shellModel =
+      sanitizeProviderConfigValue(processEnv.OPENGATEWAY_BASE_URL) !== undefined ||
+      !shellBaseUrl ||
+      resolveRouteIdFromBaseUrl(shellBaseUrl) === 'gitlawb-opengateway'
+        ? sanitizeProviderConfigValue(
+            normalizeProfileModel(processEnv.OPENAI_MODEL),
+            processEnv,
+          )
+        : undefined
     const env = buildCompatibilityProcessEnv({
       processEnv,
       compatibilityMode: 'openai',
       profileEnv: {
         OPENAI_BASE_URL:
           getRouteDefaultBaseUrl('gitlawb-opengateway') ??
-          'https://opengateway.gitlawb.com/v1',
+          'https://api.twigpine.com/v1',
         OPENAI_MODEL:
-          getRouteDefaultModel('gitlawb-opengateway') ?? 'mimo-v2.5-pro',
+          shellModel ??
+          getRouteDefaultModel('gitlawb-opengateway') ?? 'auto',
       },
     })
     env[DEFAULT_STARTUP_PROVIDER_ENV_VAR] = 'gitlawb-opengateway'
