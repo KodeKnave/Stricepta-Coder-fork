@@ -1,4 +1,7 @@
 {
   "kind": "code",
-  "settings": {}
+  "settings": {
+    "PONYTAIL_LEVEL": "off",
+    "TERSE_LEVEL": "chat"
+  }
 }

@@ -9,3 +9,7 @@ Candidate named by the user, a hypothesis to test: MiniCPM5 2B, because it admit
 Open: who decides a route (a rule, a hook, the orchestrator's judgment: `harness-task-routing` item 5 in the library roadmap), what the orchestrator sees of the other models' work, and how this works while the Anthropic usage limit is reached (`stricepta-coder-model-mixing`).
 
 Ranked after the plugin items. Not built, nothing decided. Delete this item when it is built or dropped.
+
+Added 2026-11-12: the judgement matrix (complexity, confidence, target_worker, reason) and the two-stage triage cascade (Spark-X2.6-4B scout, MiniCPM5-2B gatekeeper, guided JSON output) are written, with an evaluation, in `AI/claude/roadmap/harness-task-routing.md` ("Judgement matrix and triage cascade"); the models are Spark-X2.6-4B and MiniCPM5-2B (the 1.7B and 1B in the first note were typos).
+
+HIGHLIGHT (the user, 2026-11-12): the two-stage triage cascade is the highlight of this item for Stricepta-Coder; design it first among the parts here.

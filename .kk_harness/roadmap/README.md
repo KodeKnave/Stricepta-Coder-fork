@@ -17,12 +17,13 @@ One file per item in this folder; this table lists every goal and every feature 
 | 1f | The real context window in the hook payload | same | `createBaseHookInput`, `src/utils/hooks.ts:491` | |
 | 1g | A plugin that ships `permissions` and `env` defaults | same | plugin loader: not located | |
 | 2 | **Anthropic and local models together**: simultaneously in one session (task split configurable); a model whose usage limit is used up is out of order until restored | [model-mixing](stricepta-coder-model-mixing.md) | not checked | `harness-openclaude-fallback`, `harness-openclaude-fallback-dev-root` |
-| 3 | **Routing and a local orchestrator**: each task to Anthropic or a local model; MiniCPM5 2B as candidate to test | [routing-and-orchestrator](stricepta-coder-routing-and-orchestrator.md) | not checked | `harness-task-routing`, `harness-project-profile-orchestrator` |
+| 3 | **Routing and a local orchestrator** (HIGHLIGHT: the two-stage triage cascade): each task to Anthropic or a local model; MiniCPM5 2B as candidate to test | [routing-and-orchestrator](stricepta-coder-routing-and-orchestrator.md) | not checked | `harness-task-routing`, `harness-project-profile-orchestrator` |
 | 4 | **Roles native**, in the style of Zoo Code modes (inspiration only), one role map for both model families, per-role tools, thinking, sampling, permissions | [roles-native](stricepta-coder-roles-native.md) | not checked | `harness-model-roles`, `harness-per-role-thinking-control` |
 | 5 | **Tools built in**, as CLIs or code, not MCP servers: CBM, context-mode, Ponytail, caveman, Headroom, further plugins | [tool-integration](stricepta-coder-tool-integration.md) | not checked | |
 | 6 | **The harness native**: every feature, workflow, hook and rule of the plugin | [native-harness](stricepta-coder-native-harness.md) | not checked | `harness-composable-hook-parts` |
 | 7 | **VS Code extension** in a repository of its own (proposed, not decided) | [vscode-extension-repo](stricepta-coder-vscode-extension-repo.md) | `vscode-extension/` | |
 | 8 | **GUI improvements** (terminal UI, `web/`, extension; wish list still empty) | [gui](stricepta-coder-gui.md) | not checked | |
 | 9 | **Image generation connection** to SwarmUI or ComfyUI, opt in, built in or CLI, MCP last | [image-generation](stricepta-coder-image-generation.md) | not checked | `harness-image-generation-connection` |
+| 10 | **Own LLM backends** in the extension (llama.cpp, mistral.rs, model folders, a dispatcher interface; LM Studio and the Claude Code backend optional) | [llm-backends](stricepta-coder-llm-backends.md) | not checked | `harness-concurrent-local-models` |
 
 Goal 1 is the first part of goal 6; goal 2 builds on the plugin's manual fallback; goals 3 and 4 share one role map.

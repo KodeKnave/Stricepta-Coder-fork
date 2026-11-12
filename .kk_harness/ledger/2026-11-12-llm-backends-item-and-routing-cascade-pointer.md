@@ -1,0 +1,5 @@
+## 2026-11-12 — Roadmap item for own LLM backends; routing item points to the triage cascade
+
+The user (in a session at `AI/claude`) asked for LLM backends inside the IDE extension (llama.cpp, mistral.rs, model folders, a dispatcher interface), making LM Studio obsolete and the Claude Code backend optional. Written as `roadmap/stricepta-coder-llm-backends.md`, goal 10 in `roadmap/README.md`, ranked last with the other items. Evaluation in the item: the dispatcher interface comes before any bundled backend (all three servers speak an OpenAI-compatible API); the cost is rebuilding what LM Studio gives the harness (load with a context length, the VRAM estimate). Nothing is built or checked in this repo's source.
+
+`roadmap/stricepta-coder-routing-and-orchestrator.md` got a pointer: the judgement matrix and the two-stage triage cascade (Spark-X2.5-1.7B scout, MiniCPM5-1B gatekeeper) are written with an evaluation in `AI/claude/roadmap/harness-task-routing.md`. Open: this repo says MiniCPM5 2B, the user's list says 1B. The library entry is `2026-11-12-new-points-style-toggles-subagents-lint-headroom` in `AI/claude`. Not committed.

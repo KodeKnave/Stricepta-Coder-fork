@@ -35,3 +35,5 @@ Stricepta-Coder has no harness folder and no `CLAUDE.md` yet (its `AGENTS.md` is
 Open: the order inside this scope, which tool is a CLI and which part of the source, and the repository split; each needs a look at the source first. Stricepta-Coder has a harness folder now (`.kk_harness/` with a `roadmap/`, checked 2026-11-10), which meets the condition for moving this item into its roadmap; it stays here while the order is ranked in this library.
 
 Not built, nothing decided. Delete this item when it has moved into the Stricepta-Coder roadmap, or the list is built or dropped.
+
+Added 2026-11-12: cut a repetition loop inside one generation (a repeated n-gram in the streamed thinking or reply) and treat it as a failed call; the plugin cannot do this, hooks run between tool calls. Reason and the library side: `AI/claude/roadmap/harness-task-routing.md` ("Loops inside a stage").
