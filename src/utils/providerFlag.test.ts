@@ -206,6 +206,25 @@ describe('applyProviderFlag - anthropic', () => {
 })
 
 describe('applyProviderFlag - custom Anthropic-compatible', () => {
+  test.each([
+    ['missing endpoint', undefined, 'proxy-token'],
+    ['first-party endpoint', 'https://api.anthropic.com', 'proxy-token'],
+    ['missing credentials', 'https://proxy.example/v1', undefined],
+  ])('preserves the active provider on %s', (_label, baseUrl, token) => {
+    if (baseUrl) process.env.ANTHROPIC_BASE_URL = baseUrl
+    if (token) process.env.ANTHROPIC_AUTH_TOKEN = token
+    process.env.CLAUDE_CODE_USE_OPENAI = '1'
+    process.env.NVIDIA_NIM = '1'
+    process.env.NVIDIA_API_KEY = 'nv-key'
+    process.env.OPENAI_API_KEY = 'nv-key'
+    process.env.OPENAI_AZURE_STYLE = '1'
+    process.env.OPENAI_BASE_URL = 'https://old.example/v1'
+    const before = ENV_KEYS.map(key => [key, process.env[key]])
+
+    expect(applyProviderFlag('custom-anthropic', ['--model', 'new-model']).error).toBeDefined()
+    expect(ENV_KEYS.map(key => [key, process.env[key]])).toEqual(before)
+  })
+
   test('requires a custom endpoint instead of sending its credential to Anthropic', () => {
     process.env.ANTHROPIC_AUTH_TOKEN = 'proxy-token'
 
@@ -827,8 +846,18 @@ describe('applyProviderFlag - descriptor-backed openai-compatible routes', () =>
 
     expect(result.error).toBeUndefined()
     expect(process.env.CLAUDE_CODE_USE_OPENAI).toBe('1')
-    expect(process.env.OPENAI_BASE_URL).toBe('https://opengateway.gitlawb.com/v1')
+    expect(process.env.OPENAI_BASE_URL).toBe('https://api.twigpine.com/v1')
+    expect(process.env.OPENAI_MODEL).toBe('auto')
     expect(process.env.OPENAI_API_BASE).toBe('undefined')
+  })
+
+  test('gitlawb-opengateway explicit provider keeps an already selected model', () => {
+    process.env.OPENAI_MODEL = 'mimo-v2.6-pro'
+
+    const result = applyProviderFlag('gitlawb-opengateway', [])
+
+    expect(result.error).toBeUndefined()
+    expect(process.env.OPENAI_MODEL).toBe('mimo-v2.6-pro')
   })
 
   test('gitlawb-opengateway explicit provider overrides stale generic base URL', () => {
@@ -840,7 +869,7 @@ describe('applyProviderFlag - descriptor-backed openai-compatible routes', () =>
 
     expect(result.error).toBeUndefined()
     expect(process.env.CLAUDE_CODE_USE_OPENAI).toBe('1')
-    expect(process.env.OPENAI_BASE_URL).toBe('https://opengateway.gitlawb.com/v1')
+    expect(process.env.OPENAI_BASE_URL).toBe('https://api.twigpine.com/v1')
     expect(process.env.OPENGATEWAY_API_KEY).toBe('fake-ogw-key')
     expect(process.env.OPENAI_API_KEY).toBe('fake-ogw-key')
   })
@@ -1567,7 +1596,7 @@ describe('applyProviderFlagFromArgs', () => {
     })
     expect(earlyResult?.error).toBeUndefined()
     expect(process.env.OPENAI_BASE_URL).toBe(
-      'https://opengateway.gitlawb.com/v1',
+      'https://api.twigpine.com/v1',
     )
     expect(process.env.OPENAI_API_KEY).toBeUndefined()
 
@@ -1578,7 +1607,7 @@ describe('applyProviderFlagFromArgs', () => {
 
     expect(lateResult?.error).toBeUndefined()
     expect(process.env.OPENAI_BASE_URL).toBe(
-      'https://opengateway.gitlawb.com/v1',
+      'https://api.twigpine.com/v1',
     )
     expect(process.env.OPENAI_API_KEY as string | undefined).toBe(
       'settings-ogw-key',
@@ -1606,7 +1635,7 @@ describe('applyProviderFlagFromArgs', () => {
 
     expect(lateResult?.error).toBeUndefined()
     expect(process.env.OPENAI_BASE_URL).toBe(
-      'https://opengateway.gitlawb.com/v1',
+      'https://api.twigpine.com/v1',
     )
     expect(process.env.OPENAI_MODEL).toBe('custom-ogw-model')
   })

@@ -38,6 +38,14 @@ bun run dev
 
 ## Provider Examples
 
+An explicit `--provider` selection is reapplied after settings environment
+variables are loaded. If the selection becomes invalid, reapplication raises a
+validation error instead of continuing with another provider enabled by settings.
+A runtime settings update rejected during provider validation keeps the
+previously active provider and transport configuration.
+For `--provider custom-anthropic`, keep `ANTHROPIC_BASE_URL` set to a non-Anthropic
+endpoint and provide `ANTHROPIC_AUTH_TOKEN` or `ANTHROPIC_API_KEY`.
+
 ### OpenAI
 
 ```bash
@@ -59,6 +67,12 @@ tag preserves the same route, including when combined with a reasoning query.
 If you use the in-app provider wizard, choose `Codex OAuth` to open ChatGPT sign-in in your browser and let OpenClaude store Codex credentials securely.
 
 If you already use the Codex CLI, OpenClaude reads `~/.codex/auth.json` automatically. You can also point it elsewhere with `CODEX_AUTH_JSON_PATH` or override the token directly with `CODEX_API_KEY`.
+
+For file-based automatic detection, an explicit `CODEX_AUTH_JSON_PATH` must
+resolve both an access token and an account ID under the runtime's credential
+rules. A missing, malformed, or incomplete file does not select Codex ahead of
+another usable provider credential. The `CODEX_API_KEY`, `CHATGPT_ACCOUNT_ID`,
+and `CODEX_ACCOUNT_ID` environment overrides take priority over file detection.
 
 If you set `CODEX_API_KEY` manually and are not relying on `auth.json` or stored
 Codex OAuth credentials, also set `CHATGPT_ACCOUNT_ID` (or
@@ -315,21 +329,40 @@ MiMo, MiniMax, Qwen). Uses the same `OPENCODE_API_KEY` as OpenCode Zen.
 OpenClaude automatically sends the session and product identity headers that
 OpenCode Go requires for prompt caching and traffic attribution.
 
-### Twigpine Opengateway
+### Twigpine OpenGateway
 
 ```bash
 export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_BASE_URL=https://opengateway.gitlawb.com/v1
+export OPENAI_BASE_URL=https://api.twigpine.com/v1
 export OPENGATEWAY_API_KEY=ogw_live_...
-export OPENAI_MODEL=mimo-v2.5-pro
+export OPENAI_MODEL=auto
 ```
 
-The Opengateway route is the fresh-install startup default and requires an API
-key from https://gitlawb.com/opengateway/keys. Keep the base URL at `/v1` and
-switch models with `/model` or `OPENAI_MODEL`. Current partner models include:
+The OpenGateway route is the fresh-install startup default and requires an API
+key from https://twigpine.com/console/gateway/keys. Keep the base URL at `/v1`
+and switch models with `/model` or `OPENAI_MODEL`. The older
+`https://opengateway.gitlawb.com/v1` address still works for existing setups.
 
-- `mimo-v2.5-pro`
-- `google/gemini-3.1-flash-lite-preview`
+New setups default to `auto`, the gateway's smart routing: it may select an
+eligible free model for a key with no credits, subject to free-usage quotas and
+rate limits. For funded keys, routing starts with the cheapest model expected
+to handle the request. The `x-gateway-served-model` response header names the
+model that answered. OpenGateway setups keep a saved profile's model or an
+`OPENAI_MODEL` you already set; settings tied to another provider's endpoint
+are not adopted by the fresh-install default.
+
+`/model` shows the gateway's list of active models from the public
+`GET https://api.twigpine.com/v1/models` endpoint (no key needed). OpenClaude
+caches that list for an hour and fetches it again at startup once the cache has
+expired, so a model the gateway adds shows up on the next launch an hour or more
+later; press `r` in `/model` to refresh it on demand. If the startup refresh
+fails, the picker keeps showing the last cached list, so a model the gateway has
+retired since then can stay listed until a refresh succeeds. A manual refresh
+discards the cached list first, so if it fails only the catalog floor below
+remains until the next successful refresh. `auto` (smart routing),
+`mimo-v2.6-pro`, and `mimo-v2.6-flash` form the route's catalog floor, kept even
+when the list has never been fetched. A saved provider profile's own model list
+or an `availableModels` allowlist can still narrow what the picker shows.
 
 ### Xiaomi MiMo
 
@@ -438,14 +471,14 @@ bundled**. They are loaded on demand, and the CLI prints an `npm install <pkg>`
 hint (add `-g` for the global CLI) if you enable a feature whose package is
 missing. Install only what you need:
 
-**Image handling note:** default global installs do **not** ship `sharp`. Clipboard paste, drag-and-drop of a local image path, and FileReadTool paths that decode a local file need `npm i -g sharp`. Forwarding an already-encoded image URL/base64 that the API accepts without local decode (passthrough) does not. This opt-in is intentional for published installs; it is not an accidental omission.
+**Image handling note:** default global installs do **not** ship `sharp`. Install it with `npm i -g sharp` when an image needs resizing, compression, or BMP-to-PNG conversion. Clipboard images, dragged image paths, and Read tool results can pass through without it when their format and size already meet the applicable API and token limits. Read may require compression even when the same image fits the clipboard's byte limit. Common uncompressed 24/32-bit BMP screenshots are converted after opting in; missing processing support produces installation guidance rather than an empty-clipboard message. This opt-in is intentional for published installs; it is not an accidental omission.
 
 | Feature | Trigger | Install |
 | --- | --- | --- |
 | AWS Bedrock | `CLAUDE_CODE_USE_BEDROCK=1` | `npm i -g @anthropic-ai/bedrock-sdk`. Profile-based auth (`~/.aws/credentials`) additionally needs `@aws-sdk/credential-providers` and `@aws-sdk/client-sts`; model listing needs `@aws-sdk/client-bedrock`. Proxy and skip-auth setups may also need `@aws-sdk/credential-provider-node`, `@smithy/node-http-handler`, or `@smithy/core`. The CLI prints the exact missing package if you hit one. |
 | Azure Foundry | `CLAUDE_CODE_USE_FOUNDRY=1` | `npm i -g @anthropic-ai/foundry-sdk @azure/identity` |
 | Claude on Vertex AI / Gemini ADC / Gemini on Vertex AI | `CLAUDE_CODE_USE_VERTEX=1` / Gemini ADC auth / `CLAUDE_CODE_USE_GEMINI_VERTEX=1` | `npm i -g google-auth-library` |
-| Reading/processing images (clipboard paste, drag-and-drop paths, FileReadTool local decode) | local image decode — **not** pre-encoded URL/base64 passthrough | `npm i -g sharp` (intentionally opt-in; prebuilt releases load it externally only when processing requires it) |
+| Image resizing, compression, and BMP clipboard conversion | image processing required to meet format, byte or token limits; in-budget supported images can pass through | `npm i -g sharp` (intentionally opt-in; prebuilt releases load it externally only when processing requires it) |
 | Optional error reporting | `SENTRY_DSN` is set | `npm i -g @sentry/node@11.9.0`. Without this package installed, setting `SENTRY_DSN` has no effect and reporting is silently disabled. |
 
 When installing OpenClaude from source (`bun install`), all of these are
@@ -914,6 +947,12 @@ OpenAI-compatible providers. On the same route, that saved key takes precedence 
 `MINIMAX_API_KEY`, `VENICE_API_KEY`, or `MIMO_API_KEY` in your shell; the live
 provider-specific value takes precedence over the saved value. This applies to
 both MiMo API and token-plan routes.
+
+For DeepSeek models on Venice, OpenClaude translates the thinking toggle to
+Venice's `reasoning.enabled` field and preserves `reasoning_effort` when thinking
+is enabled. Venice does not accept DeepSeek's top-level `thinking` field. This
+translation applies only to `api.venice.ai`; direct DeepSeek endpoints and other
+gateways retain their own request format.
 
 Launch reconstruction retains these dedicated keys only for their matching
 routes. A shell override to another provider's URL does not carry the saved

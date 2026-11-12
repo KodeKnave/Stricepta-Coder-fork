@@ -14,9 +14,9 @@ export const PROVIDER_PRESET_MANIFEST = [
     "routeId": "gitlawb-opengateway",
     "vendorId": "openai",
     "gatewayId": "gitlawb-opengateway",
-    "description": "Twigpine Opengateway - (API key required, signup at https://gitlawb.com/opengateway/keys)",
-    "label": "Twigpine Opengateway",
-    "name": "Twigpine Opengateway",
+    "description": "Twigpine OpenGateway - (API key required, signup at https://twigpine.com/console/gateway/keys)",
+    "label": "Twigpine OpenGateway",
+    "name": "Twigpine OpenGateway",
     "apiKeyEnvVars": [
       "OPENGATEWAY_API_KEY"
     ],
@@ -27,8 +27,8 @@ export const PROVIDER_PRESET_MANIFEST = [
     "modelEnvVars": [
       "OPENAI_MODEL"
     ],
-    "fallbackBaseUrl": "https://opengateway.gitlawb.com/v1",
-    "fallbackModel": "mimo-v2.5-pro",
+    "fallbackBaseUrl": "https://api.twigpine.com/v1",
+    "fallbackModel": "auto",
     "badge": {
       "text": "Recommended",
       "color": "success"
@@ -505,6 +505,17 @@ export const PROVIDER_PRESET_MANIFEST = [
     ]
   },
   {
+    "preset": "requesty",
+    "routeKind": "gateway",
+    "routeId": "requesty",
+    "vendorId": "openai",
+    "gatewayId": "requesty",
+    "description": "Requesty OpenAI-compatible gateway",
+    "apiKeyEnvVars": [
+      "REQUESTY_API_KEY"
+    ]
+  },
+  {
     "preset": "runcrate",
     "routeKind": "gateway",
     "routeId": "runcrate",
@@ -689,6 +700,7 @@ export const ORDERED_PROVIDER_PRESETS = [
   "opencode",
   "openrouter",
   "orcarouter",
+  "requesty",
   "runcrate",
   "together",
   "venice",
