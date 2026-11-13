@@ -15,5 +15,6 @@ Ideas, none decided:
 - A mode dropdown in the GUI with the active role, model and endpoint always visible; the orchestrator role as the default entry (`stricepta-coder-routing-and-orchestrator`).
 - Rules, hooks and permission sets per role (the reader role gets no write tools); the refusal figures of the model cards decide which model may take story, canon and asset roles.
 - Role presets per project profile (`harness-project-profile-orchestrator`).
+- Added 2026-11-13: a session preset (`stricepta-coder-session-settings`) selects and overrides roles from this one map; the map holds the definitions, the preset the selection. A preset may be edited in the session settings panel, with the live-change classes that item defines.
 
 Ranked after the plugin items. Not built, nothing decided. Delete this item when it is built or dropped.

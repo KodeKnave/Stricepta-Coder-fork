@@ -13,6 +13,12 @@ Stricepta-Coder is the user's fork of OpenClaude (same commit as `AI/openclaude`
 4. **The harness native**: features, workflows, hooks and rules of the plugin in the source (`stricepta-coder-native-harness`; the first part is the list of host gaps in `stricepta-coder-host-features`).
 5. **The VS Code extension** (`vscode-extension/`) as a repository of its own (`stricepta-coder-vscode-extension-repo`).
 6. **GUI improvements** (`stricepta-coder-gui`).
+7. **Image generation connection** to SwarmUI or ComfyUI, opt in (`stricepta-coder-image-generation`).
+8. **Own LLM backends** behind a dispatcher interface (`stricepta-coder-llm-backends`).
+9. **Extension API**: the hook events as native code behind typed extension points with the full session state (`stricepta-coder-extension-api`), and **stateful sessions** (`stricepta-coder-stateful-sessions`): the technical basis of 4 (the user, 2026-11-13).
+10. **Session settings**: presets per session, the roles selected by a preset, the harness toggles, the VRAM estimate of the whole model set (`stricepta-coder-session-settings`); **setup wizards** in the control center (`stricepta-coder-setup-wizard`) (the user, 2026-11-13).
+
+The numbering of the roadmap table (`../roadmap/README.md`) differs: it counts every item file, this list groups by theme.
 
 ## Where things live
 

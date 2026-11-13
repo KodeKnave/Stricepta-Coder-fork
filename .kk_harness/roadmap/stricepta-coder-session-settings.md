@@ -1,0 +1,28 @@
+A session settings panel: LM Studio-like presets per session (sampling, context, thinking), the roles, the harness toggles and a VRAM estimate of the whole model set, with defaults in the control center.
+
+# Stricepta-Coder: session settings, presets, toggles and the VRAM estimate
+
+The user (2026-11-13), four points that belong to one place:
+
+1. LM Studio presets for sessions, maybe in a session settings panel: configurable parameters per session like temperature; open question whether they can be changed during an active session; the presets might include or hold the roles system (Zoo Code / Roo Code modes, `stricepta-coder-roles-native`); default settings elsewhere, in the control center or a new panel, possibly a sidebar with one entry per aspect.
+2. All current harness plugin settings (the toggles for handoff and the others) configurable in a panel: the control center, or the session settings panel where they can become part of roles or presets.
+3. An LM Studio-like VRAM estimate in GB, for the full combination of models (all roles active, headroom for subagents), presumably in the same place as the presets.
+
+## What exists
+
+- Sampling and load parameters per role live in `.kk_harness/config.json` (`roles.default.parameters`, a role's own `parameters`; the keys and which ones `lms load` takes are listed in `hooks/roles-keys.sh` of `AI/claude`); `tools/roles-launch.sh` merges them and `hooks/roles-load.sh` loads the model with the VRAM gate (`lms load --estimate-only` for the model, the free memory of the card, `VRAM_HEADROOM_GB`). The host sends `temperature` only to the Anthropic API (`src/services/api/claude.ts`, `temperatureOverride`); for a local model the OpenAI-compatible shim carries what the role gives it.
+- The harness toggles are environment variables: `START_HANDOFF`, `START_SKELETON`, `START_MODEL`, `START_WORKPLACE`, `REINJECT_RULES`, `COMPACT_INDEX`, `CLEANUP_DIALOG` and the `HOOK_*` and `HK_*` switches, set in `.openclaude/settings.json` (`env`) by `tools/openclaude-settings.sh`, plus `PONYTAIL_LEVEL` and `TERSE_LEVEL` in `config.json` (`settings`). The README of `AI/claude` ("Settings") is the list.
+- The VS Code extension has a Control Center (`vscode-extension/openclaude-vscode/src/extension.js`, command `openclaude.openControlCenter`, view `openclaude.controlCenter`) and a chat view (`src/chat/`); no settings panel and no preset notion yet.
+
+## Evaluation (2026-11-13, nothing built, nothing run)
+
+- **One schema for a preset**, the role map and the toggles, read by the host and by the plugin alike, so the two never drift: the preset is what `config.json` holds today (roles with model, backend, parameters, system prompt, task) plus the toggles, with a name. A project has a default preset; a session starts from one and may be started from another. This is the configuration half; `stricepta-coder-stateful-sessions` is the running half.
+- **Roles inside presets, not beside them:** a preset names the roles it activates and their models; the role definitions stay one map (`stricepta-coder-roles-native`), the preset picks and overrides. That answers "might include or hold the roles system": it holds a selection, not the definitions.
+- **Changing during an active session:** sampling and thinking can change per request, so they are safe to change at any time and apply to the next request; the model or its context window cannot change without a reload and a new window (and the transcript may not fit), so those are locked while a turn runs and applied at the next turn with a warning about the context. The toggles of the harness apply at the next event they belong to. So: editable during a session, with three classes (next request, next turn after reload, next event), shown as such in the panel.
+- **Where:** a session settings panel in the chat view (what this session runs on, editable as above), the defaults and presets in the control center (one sidebar entry per aspect: presets, roles, toggles, models and VRAM), as the user proposes. The GUI rework (`stricepta-coder-gui`) decides the look, this item the content.
+- **The VRAM estimate of the whole set:** sum over the models a preset activates (every active role, the orchestrator, the reader) of LM Studio's estimate per model and window (`lms load --estimate-only`, the figure the VRAM gate already uses), plus the subagent headroom (how many role calls may run at once times the largest role) and the fixed headroom, against the card's total. Shown in the preset editor and recomputed on each change; red when it does not fit, with the role that tips it. The measured sizes of loaded models (`harness-concurrent-local-models`: open) make the estimate exact. With own backends (`stricepta-coder-llm-backends`) the estimate needs a source other than `lms`; the panel's figure must not depend on LM Studio alone.
+- **Hardware-aware defaults** are the setup wizard's job (`stricepta-coder-setup-wizard`); the panel edits, the wizard proposes.
+
+Open: whether a preset is a file in the project (`.kk_harness/presets/<name>.json`, tracked) or in the user folder; whether a preset may carry rules and knowledge to inject (a role already names a system prompt); the exact three classes of a live change and their wording in the panel.
+
+Related: `stricepta-coder-roles-native`, `stricepta-coder-stateful-sessions`, `stricepta-coder-gui`, `stricepta-coder-setup-wizard`, `stricepta-coder-llm-backends`; in `AI/claude/roadmap/`: `harness-model-roles`, `harness-per-role-thinking-control`, `harness-concurrent-local-models`, `harness-style-toggles`. Ranked after the plugin items with the other Stricepta-Coder items. Delete this item when it is built or dropped.
